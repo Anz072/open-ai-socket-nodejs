@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <title>Socket.io Client</title>
+</head>
+
+<body>
+
+    <button id="connectButton">Connect to Server</button>
+    <button id="disconnectButton">Disconnect from Server</button>
+
+    <button id="sendMessageButton">Send Message to Server</button>
+
+    <script>
+        let socket; // Declare socket outside the scope
+
+        // Event listener for the "Connect" button
+        const connectButton = document.getElementById("connectButton");
+        connectButton.addEventListener("click", () => {
+            console.log('INITIATED')
+            socket = io("http://localhost:3000"); // Create the socket when the button is clicked
+            setupSocketListeners(); // Set up event listeners
+        });
+
+        // Event listener for the "Disconnect" button
+        const disconnectButton = document.getElementById("disconnectButton");
+        disconnectButton.addEventListener("click", () => {
+            if (socket) {
+                socket.disconnect();
+                console.log("Disconnected from the server");
+            } else {
+                console.log("Not connected to the server.");
+            }
+        });
+
+        // Event listener for the "Send Message" button
+        const sendMessageButton = document.getElementById("sendMessageButton");
+        sendMessageButton.addEventListener("click", () => {
+            if (socket && socket.connected) {
+                const messageToServer = "Hello, server!";
+                socket.emit("clientMessage", messageToServer);
+            } else {
+                console.log("Not connected to the server. Click 'Connect to Server' first.");
+            }
+        });
+
+        // Function to set up socket event listeners
+        function setupSocketListeners() {
+            // Event listener for the "connect" event
+            socket.on("connect", () => {
+                console.log("Connected to the server");
+            });
+
+            // Event listener for the "disconnect" event
+            socket.on("disconnect", () => {
+                console.log("Disconnected from the server");
+                io.emit("userDisconnected", { userId: socket.id });
+            });
+
+            // Event listener for any event from the server
+            socket.on("serverResponse", (data) => {
+                console.log("Received event 'serverResponse' with data:", data);
+            });
+
+            // Event listener for any event from the server
+            socket.on("contentFromServer", (data) => {
+                console.log("data:", data);
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>
