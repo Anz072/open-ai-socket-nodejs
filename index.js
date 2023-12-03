@@ -1,5 +1,5 @@
 require("dotenv").config();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const express = require("express");
 const app = express();
 const OpenAI = require("openai");
@@ -7,7 +7,7 @@ const openai = new OpenAI();
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", "null"],
+    origin: ["http://localhost:3001", "null", "*"],
     methods: ["GET", "POST"],
   },
 });
@@ -17,8 +17,7 @@ io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("clientMessage", (content) => {
-    console.log("content");
-    console.log(content);
+    console.log("content received");
     openAiHandler(socket, content);
   });
 
@@ -30,6 +29,10 @@ io.on("connection", (socket) => {
 httpServer.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
 
 async function openAiHandler(socket, content) {
   const completion = await openai.chat.completions.create({
@@ -49,14 +52,7 @@ async function openAiHandler(socket, content) {
 
   for await (const chunk of completion) {
     if (chunk.choices[0].delta.content !== null) {
-      if (
-        chunk.choices[0].delta.content == "" ||
-        chunk.choices[0].delta.content == " "
-      ) {
-        socket.emit("serverResponse", "XeX");
-      } else {
-        socket.emit("serverResponse", chunk.choices[0].delta.content);
-      }
+      socket.emit("serverResponse", chunk.choices[0].delta.content);
     }
   }
 }
