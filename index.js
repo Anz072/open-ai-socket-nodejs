@@ -54,7 +54,11 @@ async function openAiHandler(socket, content) {
     if (chunk.choices[0].delta.content !== null) {
       socket.emit("serverResponse", chunk.choices[0].delta.content);
     }
+    if (chunk.choices[0].delta.content === undefined){
+      socket.emit("serverResponse", "END_OF_STREAM");
+    }
   }
+
 }
 
 module.exports = { openAiHandler };
