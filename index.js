@@ -17,8 +17,14 @@ io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("clientMessage", (content) => {
-    console.log("content received");
-    openAiHandler(socket, content);
+    if (content !== undefined && content !== null) {
+      console.log("content received");
+      console.log(content.type);
+      console.log(content.length);
+      openAiHandler(socket, content.text);
+    }else{
+      console.log('Content is NULL/Undefined');
+    }
   });
 
   socket.on("disconnect", () => {
@@ -54,11 +60,10 @@ async function openAiHandler(socket, content) {
     if (chunk.choices[0].delta.content !== null) {
       socket.emit("serverResponse", chunk.choices[0].delta.content);
     }
-    if (chunk.choices[0].delta.content === undefined){
+    if (chunk.choices[0].delta.content === undefined) {
       socket.emit("serverResponse", "END_OF_STREAM");
     }
   }
-
 }
 
 module.exports = { openAiHandler };
