@@ -17,13 +17,17 @@ io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("clientMessage", (content) => {
-    if (content !== undefined && content !== null) {
+    if (content.text !== undefined && content.text !== null) {
       console.log("content received");
       console.log(content.type);
       console.log(content.length);
       openAiHandler(socket, content.text);
     }else{
       console.log('Content is NULL/Undefined');
+      socket.emit("serverResponse", "Failed to fetch content, try realoading the webpage");
+      socket.emit("serverResponse", "END_OF_STREAM");
+
+
     }
   });
 
@@ -36,9 +40,6 @@ httpServer.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
 
 async function openAiHandler(socket, content) {
   const completion = await openai.chat.completions.create({
