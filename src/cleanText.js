@@ -1,47 +1,10 @@
 const cheerio = require("cheerio");
 const { removeStopwords } = require("stopword");
-const natural = require("natural");
-const nlp = require("compromise");
+const extractNamedEntities = require("./extractNamedEntities");
+const extractKeywords = require("./extractKeywords");
 const sentenceSplitter = require("sentence-splitter");
 
-function extractNamedEntities(text) {
-  const doc = nlp(text);
-
-  // Extract named entities for people, places, and organizations
-  const people = doc.people().out("array");
-  const places = doc.places().out("array");
-  const organizations = doc.organizations().out("array");
-
-  // Combine all named entities
-  const namedEntities = [...people, ...places, ...organizations];
-
-  return namedEntities;
-}
-
-function extractKeywords(sentences) {
-  const tokenizer = new natural.WordTokenizer();
-  const tfidf = new natural.TfIdf();
-
-  // Add each sentence as a separate document to the TF-IDF model
-  sentences.forEach((sentence) => {
-    const words = tokenizer.tokenize(sentence);
-    tfidf.addDocument(words);
-  });
-
-  // Extract keywords based on TF-IDF for each document
-  const keywords = [];
-  for (let i = 0; i < tfidf.documents.length; i++) {
-    const documentKeywords = tfidf
-      .listTerms(i)
-      .filter((item) => item.term.length > 2) // Example: filter out short words
-      .map((item) => item.term.toLowerCase()); // Example: convert to lowercase
-    keywords.push(documentKeywords);
-  }
-
-  return keywords;
-}
-
-function cleanText(scrapedText) {
+const cleanText = (scrapedText) => {
   const xda = scrapedText
     .split("\n")
     .filter((sentence) => sentence.trim() !== "");
@@ -108,7 +71,6 @@ function cleanText(scrapedText) {
   // console.log("Original Sentences:", sentences.join(" ").split("").length);
   // console.log("Filtered Sentences:", filteredResult.join(" ").split("").length);
   return filteredResult.join(" ");
-}
-
+};
 
 module.exports = cleanText;

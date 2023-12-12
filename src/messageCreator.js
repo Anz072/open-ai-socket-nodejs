@@ -6,19 +6,19 @@ function contentMessageHandler(length, type) {
 
   switch (length) {
     case "Short":
-      msgLength = `Provide a summary key points of the relevant articles, approximately 10-15% of the original article length. Should Be full sentences. `;
+      msgLength = `The summary should be short, around 10% of the original article length provided by user.`;
       break;
     case "Medium":
-      msgLength = `Provide a more detailed summary of the relevant articles, covering around 20-30% of the length of the original articles. Should Be full sentences. `;
+      msgLength = `The summary should be medium length, around 30% of the length of the original article provided by user.`;
       break;
     case "Long":
-      msgLength = `Generate a comprehensive summary of the relevant articles, spanning approximately 50-70% of the original article length. Should Be full sentences. `;
+      msgLength = `The summary should be long, spanning around 70% of the original article length provided by user.`;
       break;
   }
   switch (type) {
     case "Generic Summary":
       msgSummaryType =
-        "Create a concise summary, capturing the main ideas and key points. Your summary should distill the essential information and present it in a clear and understandable manner.";
+        "Capture the main ideas and key points. Distill the essential information and present it in a clear and understandable manner.";
       break;
     case "Novelty":
       msgSummaryType =
@@ -38,7 +38,7 @@ function contentMessageHandler(length, type) {
       break;
   }
 
-  return `${msgLength}${msgSummaryType}`;
+  return `${msgSummaryType} ${msgLength}`;
 }
 
 module.exports = contentMessageHandler;

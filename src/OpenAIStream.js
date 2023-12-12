@@ -8,6 +8,7 @@ async function openAiHandler(
   contentMessage
 ) {
   console.log("OPENAI MODEL: ", modelHandle);
+  console.log("contentMessage: ", contentMessage);
   try {
     const completion = await openai.chat.completions.create({
       model: modelHandle,
