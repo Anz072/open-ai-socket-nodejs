@@ -23,6 +23,7 @@ async function openAiHandler(
         },
       ],
       stream: true,
+      temperature: 0.9,
     });
 
     for await (const chunk of completion) {
