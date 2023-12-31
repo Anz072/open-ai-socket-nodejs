@@ -23,7 +23,9 @@ async function openAiHandler(
         },
       ],
       stream: true,
-      temperature: 0.9,
+      top_p: 1,
+      seed: 123,
+      temperature: 0.1,
     });
 
     for await (const chunk of completion) {
@@ -33,6 +35,7 @@ async function openAiHandler(
       if (chunk.choices[0].delta.content === undefined) {
         socket.emit("serverResponse", "END_OF_STREAM");
       }
+      console.log(chunk.system_fingerprint)
     }
   } catch (error) {
     const matches = error.error.message.match(/resulted in (\d+) tokens/);
