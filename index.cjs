@@ -18,14 +18,15 @@ io.on("connection", (socket) => {
   console.log("A user connected");
   console.log(socket.id);
 
-  socket.on("clientMessage", (content) => {
+  socket.on("clientMessage", (ct) => {
+    const content = JSON.parse(ct)
     if (content.text !== undefined && content.text !== null) {
       console.log("content received");
       const contentMessage = contentMessageHandler(
         content.length,
-        content.type
+        content.type 
       );
-      const cleaned = cleanText(content.text);
+      const cleaned = cleanText(content.text); 
       openAiHandler(socket, cleaned, "gpt-3.5-turbo", contentMessage);
     } else {
       console.log("Content is NULL/Undefined");

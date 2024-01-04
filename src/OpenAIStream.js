@@ -22,20 +22,19 @@ async function openAiHandler(
           content: content,
         },
       ],
-      stream: true,
-      top_p: 1,
-      seed: 123,
-      temperature: 0.1,
+      temperature: 0,
+      seed: 444,
+      stream: true
     });
-
+// Log the assistant's reply
     for await (const chunk of completion) {
       if (chunk.choices[0].delta.content !== null) {
         socket.emit("serverResponse", chunk.choices[0].delta.content);
       }
       if (chunk.choices[0].delta.content === undefined) {
         socket.emit("serverResponse", "END_OF_STREAM");
+        console.log(chunk.system_fingerprint);
       }
-      console.log(chunk.system_fingerprint)
     }
   } catch (error) {
     const matches = error.error.message.match(/resulted in (\d+) tokens/);
@@ -54,7 +53,6 @@ async function openAiHandler(
       console.log(error.error.message);
     }
 
-    // splitter(socket, tokens, content);
     openAiHandler(socket, content, "gpt-4-1106-preview", contentMessage);
   }
 }
